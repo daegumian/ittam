@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ittam.web.notice.service.NoticeMapper">
+
+    <select id="getNotice" resultType="NoticeVO">
+        SELECT * FROM NOTICE order by (notice_regdate) desc;
+    </select>
+
+    <select id="getDetail" resultType="NoticeVO" parameterType="java.lang.String">
+        SELECT * FROM NOTICE WHERE notice_num = #{id}
+    </select>
+
+    <select id="getDetailImg" resultType="NoticeImgVO" parameterType="java.lang.String">
+        SELECT * FROM NOTICEIMG WHERE notice_num2 = #{id}
+    </select>
+
+    <insert id="postNotice" parameterType="java.util.Map">
+        <!-- Insert into NOTICE table -->
+        INSERT INTO NOTICE (notice_num, notice_name, notice_title, notice_content, notice_regdate, notice_enddate, notice_hits)
+        VALUES (#{notice.notice_num}, #{notice.notice_name}, #{notice.notice_title}, #{notice.notice_content},
+        #{notice.notice_regdate}, #{notice.notice_enddate}, #{notice.notice_hits});
+
+        <!-- Insert into NOTICEIMG table using foreach loop for a list of NoticeImgVO -->
+        <foreach collection="noticeImgList" item="image">
+            INSERT INTO NOTICEIMG (noticeimg_num, notice_num2, noticeimg_name, noticeimg_uuid, noticeimg_path, noticeimg_regdate)
+            VALUES (#{image.noticeimg_num}, #{notice.notice_num}, #{image.noticeimg_name}, #{image.noticeimg_uuid},
+            #{image.noticeimg_path}, #{image.noticeimg_regdate});
+        </foreach>
+    </insert>
+
+    <insert id="postNoticeSingle" useGeneratedKeys="true" parameterType="NoticeVO" keyColumn="notice_num" keyProperty="notice_num">
+        <!-- Insert into NOTICE table -->
+        INSERT INTO NOTICE (notice_num, notice_name, notice_title, notice_content, notice_regdate, notice_enddate, notice_hits)
+        VALUES (#{notice_num}, #{notice_name}, #{notice_title}, #{notice_content},
+        #{notice_regdate}, #{notice_enddate}, #{notice_hits});
+    </insert>
+
+    <insert id="postNoticeImgList" parameterType="java.util.List">
+        <!-- Insert into NOTICEIMG table using foreach loop for a list of NoticeImgVO -->
+        <foreach collection="list" item="image">
+            INSERT INTO NOTICEIMG (noticeimg_num, notice_num2, noticeimg_name, noticeimg_uuid, noticeimg_path, noticeimg_regdate)
+            VALUES (#{image.noticeimg_num}, #{image.notice_num2}, #{image.noticeimg_name}, #{image.noticeimg_uuid},
+            #{image.noticeimg_path}, #{image.noticeimg_regdate});
+        </foreach>
+    </insert>
+
+    <update id="updateNotice" parameterType="NoticeVO">
+        UPDATE NOTICE
+        SET
+            notice_name = #{notice_name},
+            notice_title = #{notice_title},
+            notice_content = #{notice_content},
+            notice_enddate = #{notice_enddate}
+        WHERE notice_num = #{notice_num}
+    </update>
+
+    <update id="updateNoticeImg" parameterType="NoticeImgVO">
+        UPDATE NOTICEIMG
+        SET
+            NOTICEIMG_NAME = #{noticeimg_name},
+            NOTICEIMG_UUID = #{noticeimg_uuid},
+            NOTICEIMG_PATH = #{noticeimg_path},
+            NOTICEIMG_REGDATE = #{noticeimg_regdate}
+        WHERE NOTICE_NUM2 = #{notice_num2}
+    </update>
+
+    <delete id="deleteNotice" parameterType="NoticeVO">
+        DELETE FROM NOTICE
+        WHERE notice_num = #{notice_num}
+    </delete>
+
+    <delete id="deleteNoticeImg" parameterType="NoticeImgVO">
+        DELETE FROM NOTICEIMG
+        WHERE notice_num2 = #{notice_num2}
+    </delete>
+
+    <select id="getNoticeOne" resultType="NoticeVO" parameterType="java.lang.Long">
+        SELECT * FROM NOTICE WHERE notice_num = #{notice_num}
+    </select>
+    
+    <select id="searchNoticeByTitle" resultType="NoticeVO" parameterType="java.lang.String">
+        SELECT * FROM NOTICE WHERE notice_title LIKE CONCAT('%', #{title}, '%')
+    </select>
+
+    <select id="searchNoticeByContent" resultType="NoticeVO" parameterType="java.lang.String">
+        SELECT * FROM NOTICE WHERE notice_title LIKE CONCAT('%', #{content}, '%')
+    </select>
+
+    <select id="searchNoticeIsActive" resultType="NoticeVO">
+        SELECT * FROM NOTICE WHERE DATE_FORMAT(notice_enddate, '%Y-%m-%d') &gt;= DATE_FORMAT(NOW(), '%Y-%m-%d')
+    </select>
+
+    <select id="searchNoticeIsExpire" resultType="NoticeVO">
+        SELECT * FROM NOTICE WHERE DATE_FORMAT(notice_enddate, '%Y-%m-%d') &lt; DATE_FORMAT(NOW(), '%Y-%m-%d')
+    </select>
+
+    <select id="searchNoticeByDate" resultType="NoticeVO" parameterType="NoticeSearchVO">
+    <![CDATA[
+        SELECT * FROM NOTICE
+        WHERE DATE_FORMAT(notice_regdate, '%Y-%m-%d') >= #{notice_regdate} AND DATE_FORMAT(notice_enddate, '%Y-%m-%d') <= #{notice_enddate}
+        ]]>
+    </select>
+
+    <update id="upperNoticeHits" parameterType="java.lang.String">
+        UPDATE NOTICE
+        SET notice_hits = notice_hits + 1
+        WHERE notice_num = #{notice_num}
+    </update>
+
+</mapper>

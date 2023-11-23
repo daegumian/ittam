@@ -1,0 +1,31 @@
+.handle {width: 8%;}
+.atatable-sorter {height: 10px;}
+
+.approveBtn {
+  border: none;
+  border-radius: 5px;
+}
+
+.datatable-sorter::after {
+  top: 0px;
+}
+.datatable-sorter::before {
+  bottom: 0px;
+}
+.table  a {color: black;}
+
+.table {vertical-align:middle;}
+.reset-btn {
+  background-color: white;
+  border-color: gray;
+  margin-right: 8px;
+}
+
+.datatable-top {overflow: hidden; padding: 4px 10px 10px 10px;}
+.page-nav{
+  float: left;
+  overflow: hidden;
+}
+
+.page-nav-li { float: left;}
+

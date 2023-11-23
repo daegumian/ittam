@@ -1,0 +1,398 @@
+
+
+#1. 그룹 카테고리
+CREATE TABLE GROUP_CATEGORY (
+	CATEGORY_NUM INT PRIMARY KEY AUTO_INCREMENT,
+    CATEGORY_NAME VARCHAR(30),
+    CATEGORY_PARENT_NUM INT
+);
+
+#2. IT자산 테이블
+CREATE TABLE ITASSETS (
+  ASSETS_NUM INT PRIMARY KEY AUTO_INCREMENT,
+  CATEGORY_NUM INT,
+  ASSETS_NAME VARCHAR(255),
+  ASSETS_STATUS VARCHAR(50),
+  ASSETS_COUNT INT,
+  SPEC_NUM VARCHAR(50)
+);
+
+#3. PC/노트북
+CREATE TABLE PCSPEC(
+	SPEC_NUM INT PRIMARY KEY AUTO_INCREMENT,
+    SPEC_CPU VARCHAR(30),
+    SPEC_RAM VARCHAR(30),
+    SPEC_MAINBOARD VARCHAR(30),
+    SPEC_POWER VARCHAR(30),
+    SPEC_GPU VARCHAR(30),
+    SPEC_HDD VARCHAR(30),
+    SPEC_SSD VARCHAR(30),
+    SPEC_OPS VARCHAR(50),
+    SPEC_MFG VARCHAR(50),
+    SPEC_SIRIEL VARCHAR(50),
+    SPEC_WARRANTY Date
+);
+
+#4. 기타용품
+CREATE TABLE ETCSPEC(
+	SPEC_NUM INT PRIMARY KEY AUTO_INCREMENT,
+    ETC_MFG VARCHAR(30),
+    SPEC_SIRIEL VARCHAR(50),
+    SPEC_WARRANTY Date
+);
+
+#5. 소프트웨어
+CREATE TABLE SWSPEC(
+	SPEC_NUM INT PRIMARY KEY AUTO_INCREMENT,
+    SW_MFG VARCHAR(30),
+	SPEC_SIRIEL VARCHAR(50),
+    SPEC_WARRANTY Date
+);
+
+#6. 서버
+CREATE TABLE SERVERSPEC(
+	SPEC_NUM INT PRIMARY KEY AUTO_INCREMENT,
+    SERVER_MFG VARCHAR(30),
+    SPEC_SIRIEL VARCHAR(50),
+    SPEC_WARRANTY Date,
+    SERVER_CAPA VARCHAR(30)
+);
+
+#7. 자산 이력
+CREATE TABLE ASSETS_RECORD(
+	RECORD_NUM INT PRIMARY KEY AUTO_INCREMENT,
+    CATEGORY_NUM INT,
+    ASSETS_NUM INT,
+    USER_ID INT
+);
+
+#8. 사용자 구매/사용/교환 신청
+CREATE TABLE USER_REQUEST(
+	USERQ_NUM INT PRIMARY KEY AUTO_INCREMENT,
+    USER_ID VARCHAR(30),
+    CATEGORY_NUM INT,
+    ASSETS_NUM INT,
+    USERQ_TITLE VARCHAR(30),
+    USERQ_COUNT INT,
+    USERQ_REGDATE DATE,
+    USERQ_KIND VARCHAR(10),
+    USERQ_COMMENT VARCHAR(500),
+    USERQ_YN VARCHAR(1),
+    USERQ_GRANTOR VARCHAR(30),
+    USERQ_OKDATE DATE
+);
+
+#9. 사용자 정보
+CREATE TABLE USER(
+	USER_ID VARCHAR(30) PRIMARY KEY,
+    USER_PW VARCHAR(30),
+    USER_NAME VARCHAR(30),
+    USER_EMAIL VARCHAR(30),
+    USER_DEPART VARCHAR(30),
+    USER_PHONE VARCHAR(30),
+    USER_ADDRESS VARCHAR(50),
+    USER_AUTH VARCHAR(20),
+    USER_JOINDATE TIMESTAMP,
+    ASSETS_NUM INT
+);
+
+#10. 관리자 재고 구매/수리/폐기결재요청
+CREATE TABLE STOCK_APPROVAL(
+	APPRO_NUM INT PRIMARY KEY AUTO_INCREMENT,
+    USER_ID VARCHAR(30),
+    ASSETS_NUM INT,
+    CATEGORY_NUM INT,
+    APPRO_TITLE VARCHAR(50),
+    APPRO_DATE DATE,
+    APPRO_COUNT INT,
+    ASSET_SERIAL VARCHAR(30),
+    APPRO_COMMENT VARCHAR(3000),
+    APPRO_KIND VARCHAR(10),
+    APPRO_YN VARCHAR(10),
+    APPRO_OKDATE DATE
+);
+
+#11.  IT 자산 이미지
+CREATE TABLE ITPRODIMG(
+	ITPRODIMG_NUM INT PRIMARY KEY AUTO_INCREMENT,
+    ASSETS_NUM INT,
+    CATEGORY_NUM INT,
+    ITPRODIMG_NAME VARCHAR(30),
+    ITPRODIMG_UUID VARCHAR(100),
+    ITPRODIMG_PATH VARCHAR(50),
+    ITPRODIMG_REGDATE DATE,
+    ITPROD_NUM INT
+);
+
+#12. 공지사항
+CREATE TABLE NOTICE(
+	NOTICE_NUM INT PRIMARY KEY AUTO_INCREMENT,
+    NOTICE_NAME VARCHAR(10),
+    NOTICE_TITLE VARCHAR(30),
+    NOTICE_CONTENT VARCHAR(3000),
+    NOTICE_REGDATE DATE,
+    NOTICE_ENDDATE DATE,
+    NOTICE_HITS INT
+);
+
+#13 공지사항 이미지 테이블
+CREATE TABLE NOTICEIMG(
+	NOTICEIMG_NUM INT PRIMARY KEY AUTO_INCREMENT,
+    NOTICE_NUM2 INT(10),
+    NOTICEIMG_NAME VARCHAR(30),
+    NOTICEIMG_UUID VARCHAR(100),
+    NOTICEIMG_PATH VARCHAR(50),
+    NOTICEIMG_REGDATE DATE
+);
+
+########################################################
+## 더미 값 넣어봄
+
+# 유저
+INSERT INTO USER (USER_ID, USER_PW, USER_NAME, USER_EMAIL, USER_DEPART, USER_PHONE, USER_ADDRESS, USER_AUTH, USER_JOINDATE, ASSETS_NUM)
+VALUES
+  ('홍길동', '111222', '홍길동', 'hong@example.com', '엔지니어링', '123-456-7890', '서울시 강남구', '사용자', NOW(), 1),
+  ('김영희', '111222', '김영희', 'kim@example.com', '마케팅', '987-654-3210', '서울시 서초구', '사용자', NOW(), 2),
+  ('이철수', '111222', '이철수', 'lee@example.com', '영업', '555-555-5555', '서울시 종로구', '사용자', NOW(), 3),
+  ('박민지', '111222', '박민지', 'park@example.com', '디자인', '111-222-3333', '서울시 중구', '사용자', NOW(), 4),
+  ('정성호', '111222', '정성호', 'jung@example.com', '개발', '444-444-4444', '서울시 마포구', '사용자', NOW(), 5),
+  ('김지영', '111222', '김지영', 'kim@example.com', '인사', '777-777-7777', '서울시 송파구', '사용자', NOW(), 6),
+  ('이민우', '111222', '이민우', 'lee@example.com', '재무', '666-666-6666', '서울시 강동구', '사용자', NOW(), 7),
+  ('한지수', '111222', '한지수', 'han@example.com', '연구개발', '999-999-9999', '서울시 노원구', '사용자', NOW(), 8),
+  ('최현우', '111222', '최현우', 'choi@example.com', '생산', '333-333-3333', '서울시 은평구', '사용자', NOW(), 9),
+  ('양승호', '111222', '양승호', 'yang@example.com', '구매', '222-222-2222', '서울시 관악구', '사용자', NOW(), 10);
+
+# PC/노트북
+INSERT INTO PCSPEC (SPEC_CPU, SPEC_RAM, SPEC_MAINBOARD, SPEC_POWER, SPEC_GPU, SPEC_HDD, SPEC_SSD, SPEC_OPS, SPEC_MFG, SPEC_SIRIEL, SPEC_WARRANTY)
+VALUES
+    ('Intel Core i7-10700', '16GB DDR4', 'ASUS ROG Strix Z490-E', '650W', 'NVIDIA GeForce RTX 3080', '1TB HDD', '500GB SSD', 'Windows 10 Pro', 'Dell', 'CND0123456', '2023-08-01'),
+    ('AMD Ryzen 9 5900X', '32GB DDR4', 'MSI B450 Tomahawk', '750W', 'AMD Radeon RX 6900 XT', '2TB HDD', '1TB SSD', 'Windows 11 Pro', 'HP', '4CZ1234HZ0', '2023-09-15'),
+    ('Intel Core i5-10600K', '8GB DDR4', 'Gigabyte B460M DS3H', '550W', 'NVIDIA GeForce GTX 1660', '512GB HDD', '256GB SSD', 'Windows 10 Home', 'Lenovo', 'CND7890123', '2023-07-20'),
+    ('AMD Ryzen 7 5800X', '64GB DDR4', 'ASRock B550 Phantom Gaming', '850W', 'NVIDIA GeForce RTX 3070', '2TB HDD', '1TB SSD', 'Windows 11 Home', 'Acer', '4CZ5678ACD', '2023-10-05'),
+    ('Intel Core i9-11900K', '32GB DDR4', 'ASUS Prime Z590-A', '750W', 'NVIDIA GeForce RTX 3060 Ti', '1TB HDD', '512GB SSD', 'Windows 10 Pro', 'Dell', 'CND3456789', '2023-08-25'),
+    ('AMD Ryzen 5 5600X', '16GB DDR4', 'MSI B450 Gaming Plus', '650W', 'AMD Radeon RX 6700 XT', '1TB HDD', '512GB SSD', 'Windows 11 Home', 'HP', '4CZ9012345', '2023-09-10'),
+    ('Intel Core i7-10700K', '32GB DDR4', 'ASUS TUF Gaming Z490-Plus', '750W', 'NVIDIA GeForce GTX 1660 Super', '2TB HDD', '1TB SSD', 'Windows 10 Pro', 'Lenovo', 'CND6789012', '2023-08-05'),
+    ('AMD Ryzen 9 5950X', '64GB DDR4', 'MSI MPG B550 Gaming Edge', '850W', 'NVIDIA GeForce RTX 3080 Ti', '2TB HDD', '2TB SSD', 'Windows 11 Pro', 'Acer', '4CZ2345670', '2023-10-20'),
+    ('Intel Core i5-10400', '16GB DDR4', 'Gigabyte B360 HD3', '550W', 'NVIDIA GeForce GTX 1650', '512GB HDD', '256GB SSD', 'Windows 10 Home', 'Dell', 'CND2345678', '2023-07-15'),
+    ('AMD Ryzen 7 5800X', '32GB DDR4', 'ASRock X570 Taichi', '750W', 'AMD Radeon RX 6800 XT', '1TB HDD', '1TB SSD', 'Windows 11 Home', 'HP', '4CZ0123456', '2023-09-30');
+
+
+# 기타용품
+INSERT INTO ETCSPEC (ETC_MFG, SPEC_SIRIEL, SPEC_WARRANTY)
+VALUES
+    ('Logitech', 'CND0123456', '2023-08-01'),
+    ('Samsung', '4CZ1234HZ0', '2023-09-15'),
+    ('Microsoft', 'CND7890123', '2023-07-20'),
+    ('LG', '4CZ5678ACD', '2023-10-05'),
+    ('Sony', 'CND3456789', '2023-08-25'),
+    ('Corsair', '4CZ9012345', '2023-09-10'),
+    ('Razer', 'CND6789012', '2023-08-05'),
+    ('AOC', '4CZ2345670', '2023-10-20'),
+    ('Dell', 'CND2345678', '2023-07-15'),
+    ('HP', '4CZ0123456', '2023-09-30');
+
+
+# 소프트웨어
+INSERT INTO SWSPEC (SW_MFG, SPEC_SIRIEL, SPEC_WARRANTY)
+VALUES
+    ('Microsoft', 'CND0123456', '2023-08-01'),
+    ('Adobe', '4CZ1234HZ0', '2023-09-15'),
+    ('Symantec', 'CND7890123', '2023-07-20'),
+    ('Autodesk', '4CZ5678ACD', '2023-10-05'),
+    ('Oracle', 'CND3456789', '2023-08-25'),
+    ('IBM', '4CZ9012345', '2023-09-10'),
+    ('VMware', 'CND6789012', '2023-08-05'),
+    ('Red Hat', '4CZ2345670', '2023-10-20'),
+    ('Google', 'CND2345678', '2023-07-15'),
+    ('Apple', '4CZ0123456', '2023-09-30');
+
+# 서버
+INSERT INTO SERVERSPEC (SERVER_MFG, SPEC_SIRIEL, SPEC_WARRANTY, SERVER_CAPA)
+VALUES
+    ('Dell', 'CND0123456', '2023-08-01', '1U Rackmount'),
+    ('HP', '4CZ1234HZ0', '2023-09-15', '2U Rackmount'),
+    ('IBM', 'CND7890123', '2023-07-20', '4U Tower'),
+    ('Cisco', '4CZ5678ACD', '2023-10-05', '1U Rackmount'),
+    ('Supermicro', 'CND3456789', '2023-08-25', '2U Rackmount'),
+    ('Lenovo', '4CZ9012345', '2023-09-10', '4U Tower'),
+    ('Fujitsu', 'CND6789012', '2023-08-05', '2U Rackmount'),
+    ('HPE', '4CZ2345670', '2023-10-20', '1U Rackmount'),
+    ('ASUS', 'CND2345678', '2023-07-15', '4U Tower'),
+    ('Intel', '4CZ0123456', '2023-09-30', '2U Rackmount');
+
+  
+# it자산
+INSERT INTO ITASSETS (CATEGORY_NUM, ASSETS_NAME, ASSETS_STATUS, ASSETS_COUNT, SPEC_NUM)
+VALUES
+  (1, '노트북 A', '사용중', 5, 5),
+  (2, '데스크탑 B', '미사용', 3, 2),
+  (3, '서버 C', '고장', 1, 8),
+  (1, '노트북 D', '사용중', 7, 3),
+  (2, '데스크탑 E', '사용중', 2, 10),
+  (3, '서버 F', '미사용', 0, 6),
+  (1, '노트북 G', '고장', 1, 7),
+  (2, '데스크탑 H', '사용중', 4, 1),
+  (3, '서버 I', '사용중', 2, 9),
+  (1, '노트북 J', '고장', 0, 4);
+
+
+####################################################################################  
+-- 조회
+SELECT * FROM USER;
+SELECT * FROM PCSPEC;
+SELECT * FROM ETCSPEC;
+SELECT * FROM SWSPEC;
+SELECT * FROM SERVERSPEC;
+SELECT * FROM ITASSETS;
+
+-- 테이블의 모든 데이터 삭제
+#TRUNCATE TABLE 테이블명;
+
+CREATE TABLE ITASSETS (
+  ASSETS_NUM INT PRIMARY KEY AUTO_INCREMENT,
+  CATEGORY_NUM INT,
+  ASSETS_NAME VARCHAR(255),
+  ASSETS_STATUS VARCHAR(50),
+  ASSETS_COUNT INT,
+  SPEC_NUM VARCHAR(50)
+);
+
+create table category (
+id INT PRIMARY KEY AUTO_INCREMENT,
+name VARCHAR(50),
+parent_id int
+);
+
+SELECT
+	a.*,
+	pc.*,
+	sw.*,
+	etc.*,
+	sv.*
+FROM ITASSETS a
+		 LEFT JOIN PCSPECETCSPEC pc ON (a.assets_name LIKE '%노트북%' OR a.assets_name LIKE '%데스크탑%') AND a.spec_num = pc.spec_num
+		 LEFT JOIN SWSPEC sw ON (a.assets_name LIKE '%소프트웨어%') AND a.spec_num = sw.spec_num
+		 LEFT JOIN SERVERSPEC sv ON (a.assets_name LIKE '%서버%') AND a.spec_num = sv.spec_num
+		 LEFT JOIN ETCSPEC etc ON a.spec_num = etc.spec_num AND a.assets_name NOT LIKE '%노트북%' AND a.assets_name NOT LIKE '%데스크탑%' AND a.assets_name NOT LIKE '%서버%' AND a.assets_name NOT LIKE '%소프트웨어%';
+
+SELECT categories.id,
+    categories.name,
+    categories.parent_id
+FROM ittam.categories;
+
+select * from USER_REQUEST;
+select * from categories;
+
+SELECT
+            a.*,
+            pc.*,
+            sw.*,
+            etc.*,
+            sv.*,
+            c.name AS category_name
+        FROM ITASSETS a
+                 LEFT JOIN PCSPEC pc ON (a.assets_name LIKE '%노트북%' OR a.assets_name LIKE '%데스크탑%') AND a.spec_num = pc.spec_num
+                 LEFT JOIN SWSPEC sw ON (a.assets_name LIKE '%소프트웨어%') AND a.spec_num = sw.spec_num
+                 LEFT JOIN SERVERSPEC sv ON (a.assets_name LIKE '%서버%') AND a.spec_num = sv.spec_num
+                 LEFT JOIN ETCSPEC etc ON a.spec_num = etc.spec_num AND a.assets_name NOT LIKE '%노트북%' AND a.assets_name NOT LIKE '%데스크탑%' AND a.assets_name NOT LIKE '%서버%' AND a.assets_name NOT LIKE '%소프트웨어%'
+                 LEFT JOIN categories c ON a.CATEGORY_NUM = c.id;
+
+                 
+CREATE TABLE ASSET_REQUEST_CATEGORY(
+	CATEGORY_ID INT PRIMARY KEY AUTO_INCREMENT,
+    GROUP_ID VARCHAR(10),
+    CATEGORY_LV INT, ##1,2,3
+    CATEGORY_NM VARCHAR(100), ##대분류중분류소분류
+    CATEGORY_DETAIL_LV INT, ##ORDER순서
+    CATEGORY_DETAIL_NM VARCHAR(100), ##이름
+    CATEGORY_PARENT_LV INT , ##1,2,3에 대한 부모컬럼
+    CATEGORY_DETAIL_PARENT_LV INT ##ORDER순서에 대한 부모컬럼
+);
+
+select * from PCSPEC;
+
+    
+        SELECT   pc.*
+        FROM ITASSETS a
+                 LEFT JOIN PCSPEC pc ON (a.assets_name LIKE '%노트북%' OR a.assets_name LIKE '%데스크탑%') AND a.spec_num = pc.spec_num
+                 LEFT JOIN SWSPEC sw ON (a.assets_name LIKE '%소프트웨어%') AND a.spec_num = sw.spec_num
+                 LEFT JOIN SERVERSPEC sv ON (a.assets_name LIKE '%서버%') AND a.spec_num = sv.spec_num
+                 LEFT JOIN ETCSPEC etc ON a.spec_num = etc.spec_num AND a.assets_name NOT LIKE '%노트북%' AND a.assets_name NOT LIKE '%데스크탑%' AND a.assets_name NOT LIKE '%서버%' AND a.assets_name NOT LIKE '%소프트웨어%'
+                 LEFT JOIN categories c ON a.CATEGORY_NUM = c.id;
+                 
+                 SELECT   SERVERSPEC.*
+        FROM ITASSETS a
+                 LEFT JOIN PCSPEC pc ON (a.assets_name LIKE '%노트북%' OR a.assets_name LIKE '%데스크탑%') AND a.spec_num = pc.spec_num
+                 LEFT JOIN SWSPEC sw ON (a.assets_name LIKE '%소프트웨어%') AND a.spec_num = sw.spec_num
+                 LEFT JOIN SERVERSPEC sv ON (a.assets_name LIKE '%서버%') AND a.spec_num = sv.spec_num
+                 LEFT JOIN ETCSPEC etc ON a.spec_num = etc.spec_num AND a.assets_name NOT LIKE '%노트북%' AND a.assets_name NOT LIKE '%데스크탑%' AND a.assets_name NOT LIKE '%서버%' AND a.assets_name NOT LIKE '%소프트웨어%'
+                 LEFT JOIN categories c ON a.CATEGORY_NUM = c.id;
+                 
+                 select * from SERVERSPEC; 
+        
+        SELECT
+    a.*,
+    pc.*,
+    sw.*,
+    etc.*,
+    sv.*,
+    c.name AS category_name
+FROM ITASSETS a
+         LEFT JOIN PCSPEC pc ON (a.assets_name LIKE '%노트북%' OR a.assets_name LIKE '%데스크탑%') AND a.spec_num = pc.spec_num
+         LEFT JOIN SWSPEC sw ON (a.assets_name LIKE '%소프트웨어%') AND a.spec_num = sw.spec_num
+         LEFT JOIN SERVERSPEC sv ON (a.assets_name LIKE '%서버%') AND a.spec_num = sv.spec_num
+         LEFT JOIN ETCSPEC etc ON a.spec_num = etc.spec_num
+         LEFT JOIN categories c ON a.CATEGORY_NUM = c.id
+WHERE
+    a.assets_name NOT LIKE '%노트북%'
+    AND a.assets_name NOT LIKE '%데스크탑%'
+    AND a.assets_name NOT LIKE '%서버%'
+    AND a.assets_name NOT LIKE '%소프트웨어%';
+
+SELECT
+    a.*,
+    pc.*,
+    sw.*,
+    etc.*,
+    sv.*,
+    c.name AS category_name
+FROM ITASSETS a
+         LEFT JOIN PCSPEC pc ON (a.assets_name LIKE '%노트북%' OR a.assets_name LIKE '%데스크탑%') AND a.spec_num = pc.spec_num
+         LEFT JOIN SWSPEC sw ON (a.assets_name LIKE '%소프트웨어%') AND a.spec_num = sw.spec_num
+         LEFT JOIN SERVERSPEC sv ON (a.assets_name LIKE '%서버%') AND a.spec_num = sv.spec_num
+         LEFT JOIN ETCSPEC etc ON a.spec_num = etc.spec_num
+         LEFT JOIN categories c ON a.CATEGORY_NUM = c.id
+WHERE
+    c.name = '소프트웨어';
+    
+    SELECT
+            a.*,
+            pc.*,
+            sw.*,
+            etc.*,
+            sv.*,
+            c.name AS category_name
+        FROM ITASSETS a
+                 LEFT JOIN PCSPEC pc ON (a.assets_name LIKE '%노트북%' OR a.assets_name LIKE '%데스크탑%') AND a.spec_num = pc.spec_num
+                 LEFT JOIN SWSPEC sw ON (a.assets_name LIKE '%소프트웨어%') AND a.spec_num = sw.spec_num
+                 LEFT JOIN SERVERSPEC sv ON (a.assets_name LIKE '%서버%') AND a.spec_num = sv.spec_num
+                 LEFT JOIN ETCSPEC etc ON a.spec_num = etc.spec_num
+                 LEFT JOIN categories c ON a.CATEGORY_NUM = c.id
+        WHERE
+            c.name = '노트북' OR '데스크탑';
+
+SELECT
+            a.*,
+            pc.*,
+            sw.*,
+            etc.*,
+            sv.*,
+            c.name AS category_name
+        FROM ITASSETS a
+                 LEFT JOIN PCSPEC pc ON a.spec_num = pc.spec_num
+                 LEFT JOIN SWSPEC sw ON a.spec_num = sw.spec_num
+                 LEFT JOIN SERVERSPEC sv ON a.spec_num = sv.spec_num
+                 LEFT JOIN ETCSPEC etc ON a.spec_num = etc.spec_num
+                 LEFT JOIN categories c ON a.CATEGORY_NUM = c.id
+        WHERE c.name IN ('데스크탑', '노트북');
+

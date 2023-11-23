@@ -1,0 +1,68 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ittam.web.stock_approval.service.Stock_ApprovalMapper">
+    <select id="getStockApprovalList">
+        select * from STOCK_APPROVAL where appro_yn = 'N';
+    </select>
+
+    <update id="updateITStatus">
+        update ITASSETS set assets_status = #{assets_status} where assets_num = #{assets_num}
+    </update>
+
+    <update id="ApprovY">
+        update STOCK_APPROVAL set appro_yn = 'Y' , appro_okdate = now() where appro_num = #{appro_num}
+    </update>
+
+    <insert id="statusUpdate">
+        insert into STOCK_APPROVAL(
+            username, assets_num, category_num , appro_title, appro_date, appro_comment, appro_kind, appro_yn
+        ) VALUES (
+                     #{username}, #{assets_num}, #{category_num} , #{appro_title}, now(), #{appro_comment}, #{appro_kind}, "N"
+                 )
+    </insert>
+
+    <update id="finalyn">
+        update USER_REQUEST set userq_yn = '최종구매승인',userq_okdate = now() where userq_num = #{userq_num}
+    </update>
+
+    <update id="finaln">
+        update USER_REQUEST set userq_yn = '최종구매반려',userq_okdate = now() where userq_num = #{userq_num}
+    </update>
+
+    <insert id="purchaseApproval">
+        insert into STOCK_APPROVAL(
+            username, category_num, appro_title, appro_date, appro_comment, appro_kind, appro_yn,userq_num
+        ) values (
+                     #{username}, #{category_num}, #{appro_title}, now(), #{appro_comment}, '구매', 'N',(select max(userq_num) from USER_REQUEST )
+                 )
+    </insert>
+
+    <insert id="insertApproval">
+        INSERT INTO USER_REQUEST(username, category_num,assets_num, userq_title, userq_count, userq_regdate, userq_kind, userq_comment, userq_yn, userq_grantor)
+        SELECT
+            #{username},
+            #{category_num},
+            0,
+            #{userq_title},
+            1,
+            NOW(),
+            category_name,
+            #{userq_comment},
+            '관리자구매승인',
+            '관리자'
+
+        FROM GROUP_CATEGORY
+        WHERE category_num = #{category_num}
+    </insert>
+
+    <update id="waitYN">
+        update ITASSETS set assets_status = '승인대기중' where assets_num = #{assets_num}
+    </update>
+
+    <update id="waitN">
+        update ITASSETS set assets_status = '사용가능' where assets_num = #{assets_num}
+    </update>
+
+</mapper>

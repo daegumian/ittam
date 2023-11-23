@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ittam.web.mainPage.service.MainPageMapper">
+    <select id="getUsereqNum" resultType="integer">
+        select count(*) from USER_REQUEST where USERQ_YN = '사원사용요청'
+    </select>
+    <select id="getBuyNum" resultType="integer">
+        select count(*) from USER_REQUEST where USERQ_YN = '사원구매요청'
+    </select>
+    <select id="getYetOkNum">
+        select count(*) from STOCK_RETURN where return_status = '승인대기'
+    </select>
+    <select id="getLeaveReq">
+        select count(*) from USER where USER_LEAVE_YN = 'Y'
+    </select>
+    <insert id="registReturnReq">
+        insert into STOCK_RETURN(assets_num, username, return_kind, return_title, return_comment) values(#{assets_num}, #{username}, #{return_kind}, #{return_title}, #{return_comment});
+    </insert>
+    <select id="getReturnList" resultType="map">
+        select * from STOCK_RETURN as sr
+            left join ITASSETS as it on sr.ASSETS_NUM = it.ASSETS_NUM
+            left join USER as us on sr.username = us.username
+            ORDER BY RETURN_DATE DESC;
+    </select>
+    <select id="getSelectAssetList">
+        SELECT *
+        FROM ITASSETS a
+                 LEFT JOIN GROUP_CATEGORY gc on a.CATEGORY_NUM = gc.CATEGORY_NUM
+                 LEFT JOIN PCSPEC pc ON (a.category_num = 5 OR a.category_num = 6) AND a.spec_num = pc.spec_num
+                 LEFT JOIN SWSPEC sw ON (a.category_num = 7 OR a.category_num = 8 OR a.category_num = 9 OR a.category_num = 10 OR a.category_num = 11 OR a.category_num = 12 ) AND a.spec_num = sw.spec_num
+                 LEFT JOIN SERVERSPEC sv ON (a.category_num = 18) AND a.spec_num = sv.spec_num
+                 LEFT JOIN ETCSPEC etc ON a.spec_num = etc.spec_num AND a.category_num != 5 AND a.category_num != 6 AND a.category_num != 18 AND a.category_num != 7 AND a.category_num != 8 AND a.category_num != 9 AND a.category_num != 10 AND a.category_num != 11 AND a.category_num != 12
+        where a.CATEGORY_NUM= #{category_num} and a.ASSETS_STATUS = '사용가능';
+    </select>
+    <select id="getUserInfo" resultType="UserVO">
+        select * from USER where username = #{username}
+    </select>
+    <update id="modifyProfile">
+        update USER set user_name=#{user_name}, user_phone=#{user_phone}, user_address=#{user_address}, user_email=#{user_email} where username = #{username};
+    </update>
+    <select id="getUserCnt_using">
+        select count(*) from ITASSETS where username=#{username}
+    </select>
+    <select id="getUserCnt_exchange">
+        select count(*) from STOCK_RETURN where return_kind='교환' and RETURN_STATUS='승인대기' and username=#{username}
+    </select>
+    <select id="getUserCnt_return">
+        select count(*) from STOCK_RETURN where return_kind='반납' and RETURN_STATUS='승인대기' and username=#{username}
+    </select>
+    <select id="getUserCnt_usingReq">
+        select count(*) from USER_REQUEST where (USERQ_YN = '사원사용요청' or USERQ_YN = '관리자사용승인') and username=#{username}
+    </select>
+    <select id="getUserCnt_buyReq">
+        select count(*) from USER_REQUEST where (USERQ_YN = '사원구매요청' or USERQ_YN = '관리자구매승인') and username=#{username}
+    </select>
+    <select id="getMyAssetList">
+        select * from ITASSETS a
+                          LEFT JOIN GROUP_CATEGORY gc on a.CATEGORY_NUM = gc.CATEGORY_NUM
+                          LEFT JOIN PCSPEC pc ON (a.category_num = 5 OR a.category_num = 6) AND a.spec_num = pc.spec_num
+                          LEFT JOIN SWSPEC sw ON (a.category_num = 7 OR a.category_num = 8 OR a.category_num = 9 OR a.category_num = 10 OR a.category_num = 11 OR a.category_num = 12 ) AND a.spec_num = sw.spec_num
+                          LEFT JOIN SERVERSPEC sv ON (a.category_num = 18) AND a.spec_num = sv.spec_num
+                          LEFT JOIN ETCSPEC etc ON a.spec_num = etc.spec_num AND a.category_num != 5 AND a.category_num != 6 AND a.category_num != 18 AND a.category_num != 7 AND a.category_num != 8 AND a.category_num != 9 AND a.category_num != 10 AND a.category_num != 11 AND a.category_num != 12
+                left join (SELECT sr.* FROM STOCK_RETURN sr
+                           INNER JOIN ( SELECT assets_num, MAX(return_num) AS max_return_num FROM STOCK_RETURN
+                           GROUP BY assets_num) sr2
+                           ON sr.assets_num = sr2.assets_num AND sr.return_num = sr2.max_return_num) as nr
+        on a.assets_num = nr.assets_num where a.username = #{username}
+        order by rent_date desc
+    </select>
+
+    <update id="updateReturn_yn">
+        update STOCK_RETURN set return_status = #{return_status} where return_num = #{return_num}
+    </update>
+
+    <update id="updateAssetUsing">
+        update ITASSETS set ASSETS_STATUS = '사용가능', username = '' where ASSETS_NUM = #{assets_num}
+    </update>
+
+
+    <delete id="deleteCancelReq">
+        delete from STOCK_RETURN where RETURN_NUM = #{return_num}
+    </delete>
+
+    <select id="getAssetChartAllNum">
+        SELECT
+            COALESCE(SUM(CASE WHEN ADD_DATE <![CDATA[<=]]> DATE_SUB(NOW(), INTERVAL 5 DAY) THEN 1 ELSE 0 END), 0) AS day6,
+            COALESCE(SUM(CASE WHEN ADD_DATE <![CDATA[<=]]> DATE_SUB(NOW(), INTERVAL 4 DAY) THEN 1 ELSE 0 END), 0) AS day5,
+            COALESCE(SUM(CASE WHEN ADD_DATE <![CDATA[<=]]> DATE_SUB(NOW(), INTERVAL 3 DAY) THEN 1 ELSE 0 END), 0) AS day4,
+            COALESCE(SUM(CASE WHEN ADD_DATE <![CDATA[<=]]> DATE_SUB(NOW(), INTERVAL 2 DAY) THEN 1 ELSE 0 END), 0) AS day3,
+            COALESCE(SUM(CASE WHEN ADD_DATE <![CDATA[<=]]> DATE_SUB(NOW(), INTERVAL 1 DAY) THEN 1 ELSE 0 END), 0) AS day2,
+            COALESCE(SUM(CASE WHEN ADD_DATE <![CDATA[<=]]> DATE_SUB(NOW(), INTERVAL 0 DAY) THEN 1 ELSE 0 END), 0) AS day1,
+            COALESCE(SUM(CASE WHEN ADD_DATE <![CDATA[<=]]> DATE_SUB(NOW(), INTERVAL -1 DAY) THEN 1 ELSE 0 END), 0) AS today
+        FROM ITASSETS where ASSETS_STATUS != '폐기';
+
+
+    </select>
+
+    <select id="getAssetChartUsingNum">
+        SELECT
+            COALESCE(SUM(CASE WHEN ADD_DATE <![CDATA[<=]]> DATE_SUB(NOW(), INTERVAL 5 DAY) THEN 1 ELSE 0 END), 0) AS day6,
+            COALESCE(SUM(CASE WHEN ADD_DATE <![CDATA[<=]]> DATE_SUB(NOW(), INTERVAL 4 DAY) THEN 1 ELSE 0 END), 0) AS day5,
+            COALESCE(SUM(CASE WHEN ADD_DATE <![CDATA[<=]]> DATE_SUB(NOW(), INTERVAL 3 DAY) THEN 1 ELSE 0 END), 0) AS day4,
+            COALESCE(SUM(CASE WHEN ADD_DATE <![CDATA[<=]]> DATE_SUB(NOW(), INTERVAL 2 DAY) THEN 1 ELSE 0 END), 0) AS day3,
+            COALESCE(SUM(CASE WHEN ADD_DATE <![CDATA[<=]]> DATE_SUB(NOW(), INTERVAL 1 DAY) THEN 1 ELSE 0 END), 0) AS day2,
+            COALESCE(SUM(CASE WHEN ADD_DATE <![CDATA[<=]]> DATE_SUB(NOW(), INTERVAL 0 DAY) THEN 1 ELSE 0 END), 0) AS day1,
+            COALESCE(SUM(CASE WHEN ADD_DATE <![CDATA[<=]]> DATE_SUB(NOW(), INTERVAL -1 DAY) THEN 1 ELSE 0 END), 0) AS today
+        FROM ITASSETS where ASSETS_STATUS = '사용중'
+
+    </select>
+
+    <select id="getAssetChartDisposeNum">
+        SELECT
+            COALESCE(SUM(CASE WHEN ADD_DATE <![CDATA[<=]]> DATE_SUB(NOW(), INTERVAL 5 DAY) THEN 1 ELSE 0 END), 0) AS day6,
+            COALESCE(SUM(CASE WHEN ADD_DATE <![CDATA[<=]]> DATE_SUB(NOW(), INTERVAL 4 DAY) THEN 1 ELSE 0 END), 0) AS day5,
+            COALESCE(SUM(CASE WHEN ADD_DATE <![CDATA[<=]]> DATE_SUB(NOW(), INTERVAL 3 DAY) THEN 1 ELSE 0 END), 0) AS day4,
+            COALESCE(SUM(CASE WHEN ADD_DATE <![CDATA[<=]]> DATE_SUB(NOW(), INTERVAL 2 DAY) THEN 1 ELSE 0 END), 0) AS day3,
+            COALESCE(SUM(CASE WHEN ADD_DATE <![CDATA[<=]]> DATE_SUB(NOW(), INTERVAL 1 DAY) THEN 1 ELSE 0 END), 0) AS day2,
+            COALESCE(SUM(CASE WHEN ADD_DATE <![CDATA[<=]]> DATE_SUB(NOW(), INTERVAL 0 DAY) THEN 1 ELSE 0 END), 0) AS day1,
+            COALESCE(SUM(CASE WHEN ADD_DATE <![CDATA[<=]]> DATE_SUB(NOW(), INTERVAL -1 DAY) THEN 1 ELSE 0 END), 0) AS today
+        FROM ITASSETS where ASSETS_STATUS = '폐기'
+
+
+    </select>
+
+    <update id="exchangeAsset_exchange">
+        update ITASSETS set assets_status='사용중', username=#{username}, rent_date=now() where assets_num = #{assets_num_later}
+    </update>
+
+    <update id="exchangeAsset_cancel">
+        update ITASSETS set assets_status='사용가능', username="" where assets_num = #{assets_num_now}
+    </update>
+
+
+    <update id="exchangeAsset_assetlog">
+        update STOCK_RETURN set RETURN_ASSETS_DETAIL_NAME=#{assets_detail_name_later} where return_num = #{return_num}
+    </update>
+
+    <select id="getMyRequestList">
+        select * from USER_REQUEST where username = #{username} ORDER BY userq_regdate DESC;
+    </select>
+    <delete id="deleteUsingPerchaseReq">
+        delete from USER_REQUEST where userq_num = #{userq_num}
+    </delete>
+    <update id="registLeaveReq">
+        update USER set USER_LEAVE_YN = 'Y', USER_LEAVEDATE = now() where username = #{username}
+    </update>
+    <select id="getMyPcCnt">
+        select count(*) from ITASSETS as it
+        left join GROUP_CATEGORY as gc on it.CATEGORY_NUM = gc.CATEGORY_NUM
+        where username = #{username} and CATEGORY_PARENT_NUM = 1;
+    </select>
+    <select id="getMySwCnt">
+        select count(*) from ITASSETS as it
+        left join GROUP_CATEGORY as gc on it.CATEGORY_NUM = gc.CATEGORY_NUM
+        where username = #{username} and CATEGORY_PARENT_NUM = 2;
+    </select>
+    <select id="getMyEtcCnt">
+        select count(*) from ITASSETS as it
+        left join GROUP_CATEGORY as gc on it.CATEGORY_NUM = gc.CATEGORY_NUM
+        where username = #{username} and CATEGORY_PARENT_NUM = 3;
+    </select>
+    <select id="getMyServerCnt">
+        select count(*) from ITASSETS as it
+        left join GROUP_CATEGORY as gc on it.CATEGORY_NUM = gc.CATEGORY_NUM
+        where username = #{username} and CATEGORY_PARENT_NUM = 4;
+    </select>
+    <select id="getRecentAssetsList">
+        select * from ITASSETS a
+                          LEFT JOIN GROUP_CATEGORY gc on a.CATEGORY_NUM = gc.CATEGORY_NUM
+                          LEFT JOIN PCSPEC pc ON (a.category_num = 5 OR a.category_num = 6) AND a.spec_num = pc.spec_num
+                          LEFT JOIN SWSPEC sw ON (a.category_num = 7 OR a.category_num = 8 OR a.category_num = 9 OR a.category_num = 10 OR a.category_num = 11 OR a.category_num = 12 ) AND a.spec_num = sw.spec_num
+                          LEFT JOIN SERVERSPEC sv ON (a.category_num = 18) AND a.spec_num = sv.spec_num
+                          LEFT JOIN ETCSPEC etc ON a.spec_num = etc.spec_num AND a.category_num != 5 AND a.category_num != 6 AND a.category_num != 18 AND a.category_num != 7 AND a.category_num != 8 AND a.category_num != 9 AND a.category_num != 10 AND a.category_num != 11 AND a.category_num != 12
+        order by add_date desc limit #{nnn};
+    </select>
+    <select id="getNoticeList">
+        SELECT * FROM NOTICE order by NOTICE_REGDATE desc limit 5
+    </select>
+    <select id="getMyInfo">
+        select * from USER where username = #{username}
+    </select>
+    <select id="getFinalUsingCnt">
+        select count(*) from USER_REQUEST where userq_yn = '관리자사용승인'
+    </select>
+    <select id="getFinalBuyCnt">
+        select count(*) from STOCK_APPROVAL where APPRO_KIND = '구매' and APPRO_YN = 'N'
+    </select>
+    <select id="getFinalDisCnt">
+        select count(*) from STOCK_APPROVAL where (APPRO_KIND = '폐기' or APPRO_KIND = '수리') and APPRO_YN = 'N'
+    </select>
+
+    <insert id="registAlarm">
+        insert into ALARM(username, ASSETS_NAME, ASSETS_DETAIL_NAME, ALARM_TYPE, ALARM_STATUS) values(#{username}, #{assets_name}, #{assets_detail_name}, #{alarm_type}, #{return_status})
+    </insert>
+
+    <select id="getMyAlarmList">
+        select * from ALARM where username = #{username} and ALARM_YN = "N" order by ALARM_REGDATE desc
+    </select>
+    <select id="getMyAlarmList2">
+        select * from ALARM_REQUEST a
+                          left join USER_REQUEST b on a.USERQ_NUM = b.USERQ_NUM
+                          left join ITASSETS c on b.ASSETS_NUM = c.ASSETS_NUM
+                 where a.username = #{username} and ALARM_YN = "N" order by ALARM_REGDATE desc
+    </select>
+    <update id="handleMyAlamConfirm">
+        update ALARM set ALARM_YN = 'Y' where alarm_num = #{alarm_num}
+    </update>
+    <update id="handleMyAlamConfirm2">
+        update ALARM_REQUEST set ALARM_YN = 'Y' where alarm_num = #{alarm_num}
+    </update>
+    <select id="getMyAlarmCnt">
+        select count(*) from ALARM where ALARM_YN = "N" and username = #{username}
+    </select>
+    <select id="getMyAlarmCnt2">
+        select count(*) from ALARM_REQUEST where ALARM_YN = "N" and username = #{username}
+    </select>
+
+
+
+    <insert id="registAlarm_req">
+        insert into ALARM_REQUEST(USERQ_NUM, username, ALARM_TYPE, ALARM_STATUS) values (#{userq_num}, #{username}, #{alarm_type}, #{alarm_status})
+    </insert>
+    <insert id="registAlarm_admin">
+        insert into ALARM_ADMIN(ASSETS_NUM, CATEGORY_NUM, username, ALARM_TYPE, ALARM_STATUS) values (#{assets_num}, #{category_num}, #{username}, #{alarm_type}, #{alarm_status})
+    </insert>
+
+    <select id="getMyAlarmAdminList">
+        select * from ALARM_ADMIN as aa
+                          left join ITASSETS it on aa.assets_num = it.assets_num
+                          left join GROUP_CATEGORY gc on aa.category_num = gc.CATEGORY_NUM
+        where aa.username = #{username} and ALARM_YN = "N" order by ALARM_REGDATE desc
+    </select>
+    <update id="handleMyAlamAdminConfirm">
+        update ALARM_ADMIN set ALARM_YN = 'Y' where alarm_num = #{alarm_num}
+    </update>
+    <select id="getMyAlarmAdminCnt">
+        select count(*) from ALARM_ADMIN where ALARM_YN = "N" and username = #{username}
+    </select>
+
+
+</mapper>

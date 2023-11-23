@@ -1,0 +1,112 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ittam.web.itassets.service.ITAssetsMapper">
+    <select id="getITList">
+        SELECT *
+        FROM ITASSETS a
+                 LEFT JOIN GROUP_CATEGORY gc on a.CATEGORY_NUM = gc.CATEGORY_NUM
+                 LEFT JOIN PCSPEC pc ON (a.category_num = 5 OR a.category_num = 6) AND a.spec_num = pc.spec_num
+                 LEFT JOIN SWSPEC sw ON (a.category_num = 7 OR a.category_num = 8 OR a.category_num = 9 OR a.category_num = 10 OR a.category_num = 11 OR a.category_num = 12 ) AND a.spec_num = sw.spec_num
+                 LEFT JOIN SERVERSPEC sv ON (a.category_num = 18) AND a.spec_num = sv.spec_num
+                 LEFT JOIN ETCSPEC etc ON a.spec_num = etc.spec_num AND a.category_num != 5 AND a.category_num != 6 AND a.category_num != 18 AND a.category_num != 7 AND a.category_num != 8 AND a.category_num != 9 AND a.category_num != 10 AND a.category_num != 11 AND a.category_num != 12
+        ORDER BY ASSETS_NUM DESC
+    </select>
+
+    <insert id="SWSpecInsert" parameterType="com.ittam.web.command.SWSpecVO">
+        INSERT INTO SWSPEC(spec_num, sw_mfg, sw_spec_seriel, sw_spec_warranty, sw_purchase_date, sw_price)
+        VALUES
+            (0, #{sw_mfg}, #{sw_spec_seriel}, #{sw_spec_warranty},#{sw_purchase_date}, #{sw_price} )
+    </insert>
+
+    <insert id="ETCSpecInsert" parameterType="com.ittam.web.command.ETCSpecVO">
+        INSERT INTO ETCSPEC(spec_num, etc_mfg, etc_spec_warranty, etc_purchase_date, etc_price)
+        VALUES
+            (0, #{etc_mfg}, #{etc_spec_warranty},#{etc_purchase_date}, #{etc_price})
+
+    </insert>
+
+    <insert id="PCSpecInsert" parameterType="com.ittam.web.command.PCSpecVO">
+        INSERT INTO PCSPEC(spec_num, spec_cpu, spec_ram, spec_mainboard, spec_power, spec_gpu, spec_hdd, spec_ssd, spec_ops, spec_mfg, spec_seriel,spec_purchase_date, spec_warranty )
+        values
+            (0, #{spec_cpu}, #{spec_ram}, #{spec_mainboard}, #{spec_power}, #{spec_gpu}, #{spec_hdd}, #{spec_ssd}, #{spec_ops}, #{spec_mfg}, #{spec_seriel}, #{spec_purchase_date}, #{spec_warranty})
+
+    </insert>
+
+    <insert id="ServerSpecInsert" parameterType="com.ittam.web.command.ServerSpecVO">
+        INSERT INTO SERVERSPEC(spec_num, server_mfg, server_spec_warranty, server_capa, server_price, server_purchase_date, server_interface, server_average_life, server_rpm, server_datarecovery_life )
+        values
+            (0, #{server_mfg}, #{server_spec_warranty}, #{server_capa}, #{server_price}, #{server_purchase_date}, #{server_interface}, #{server_average_life}, #{server_rpm}, #{server_datarecovery_life})
+    </insert>
+
+
+    <insert id="createTable">
+        CREATE TEMPORARY TABLE TempCategoryPath AS
+WITH RECURSIVE CategoryPath AS (
+	SELECT category_num, category_name, category_parent_num, CAST(category_name AS CHAR(255)) AS path
+    FROM GROUP_CATEGORY
+    WHERE category_parent_num IS NULL
+
+    UNION ALL
+
+    SELECT c.category_num, c.category_name, c.category_parent_num, CONCAT(cp.path, '>', c.category_name)
+    FROM GROUP_CATEGORY c
+    JOIN CategoryPath cp ON c.CATEGORY_PARENT_NUM = cp.CATEGORY_NUM
+)
+        select * from CategoryPath
+
+    </insert>
+
+    <insert id="ITAssetsInsertSW" parameterType="com.ittam.web.command.ITAssetsVO">
+        INSERT INTO ITASSETS( category_num, assets_name,assets_detail_name, assets_status, spec_num, add_date)
+        SELECT category_num, #{assets_name},#{assets_detail_name}, '사용가능', (SELECT MAX(spec_num) FROM SWSPEC) , now()
+        FROM TempCategoryPath
+        WHERE path LIKE concat('%', #{assets_name})
+
+    </insert>
+
+    <insert id="ITAssetsInsertETC" parameterType="com.ittam.web.command.ITAssetsVO">
+        INSERT INTO ITASSETS( category_num, assets_name,assets_detail_name, assets_status, spec_num , add_date)
+        SELECT category_num, #{assets_name},#{assets_detail_name}, '사용가능', (SELECT MAX(spec_num) FROM ETCSPEC ) ,now()
+        FROM TempCategoryPath
+        WHERE path LIKE concat('%', #{assets_name})
+
+    </insert>
+
+    <insert id="ITAssetsInsertPC" parameterType="com.ittam.web.command.ITAssetsVO">
+        INSERT INTO ITASSETS( category_num, assets_name,assets_detail_name, assets_status, spec_num , add_date)
+        SELECT category_num, #{assets_name},#{assets_detail_name}, '사용가능', (SELECT MAX(spec_num) FROM PCSPEC ) , now()
+        FROM TempCategoryPath
+        WHERE path LIKE concat('%', #{assets_name})
+
+    </insert>
+
+    <insert id="ITAssetsInsertServer" parameterType="com.ittam.web.command.ITAssetsVO">
+        INSERT INTO ITASSETS( category_num, assets_name,assets_detail_name, assets_status, spec_num , add_date)
+        SELECT category_num, #{assets_name},#{assets_detail_name}, '사용가능', (SELECT MAX(spec_num) FROM SERVERSPEC ), now()
+        FROM TempCategoryPath
+        WHERE path LIKE concat('%', #{assets_name})
+
+    </insert>
+
+    <delete id="deleteTable">
+        -- 임시 테이블 삭제
+        DROP TEMPORARY TABLE IF EXISTS TempCategoryPath
+    </delete>
+
+    <!--    <insert id="purchaseYN">-->
+    <!--        insert into STOCK_APPROVAL-->
+    <!--            (username , assets_num, category_num, appro_title, appro_date, appro_count, asset_seriel, appro_comment, appro_kind, appro_yn)-->
+    <!--        values-->
+    <!--            (#{username}, (SELECT MAX(assets_num) FROM ITASSETS), (SELECT MAX(category_num) FROM ITASSETS), #{appro_title}, now(), 1, #{asset_seriel}, #{appro_comment}, '구매', 'N')-->
+    <!--    </insert>-->
+
+    <select id="yncount">
+        select count(userq_yn) as count from USER_REQUEST where userq_yn = '최종구매승인'
+    </select>
+
+    <select id="itcount">
+        select count(assets_num) as itcount from ITASSETS
+    </select>
+</mapper>

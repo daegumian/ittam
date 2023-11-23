@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ittam.web.user_request.service.UserRequestMapper">
+
+    <select id="UserRequestList" resultType="UserRequestVO">
+        select * from USER_REQUEST WHERE userq_yn = '사원사용요청' ORDER BY userq_num ASC;
+    </select>
+
+    <update id="UserRequestApprove" parameterType="java.util.Map">
+        update USER_REQUEST set userq_yn = '관리자사용승인', userq_grantor = #{username}, userq_okdate = now()
+        where userq_NUM = #{userq_num}
+    </update>
+
+    <update id="UserRequestreturn" parameterType="java.util.Map">
+        update USER_REQUEST set userq_yn = '관리자사용반려', userq_grantor = #{username}, userq_okdate = now()
+        where userq_NUM = #{userq_num}
+    </update>
+
+    <select id="UserRequestSearch" resultType="UserRequestVO">
+        select * from USER_REQUEST WHERE (username = #{inputText} or userq_kind = #{inputText}) and userq_yn = '사원사용요청' ;
+    </select>
+
+    <select id="UserRequestHandle" resultType="UserRequestVO">
+        select * from USER_REQUEST WHERE userq_yn in ('관리자사용승인', '관리자사용반려')
+    </select>
+
+    <select id="UserRequestHandleSearch" resultType="UserRequestVO">
+        SELECT * FROM USER_REQUEST
+        WHERE (username = #{inputText} OR userq_kind = #{inputText})
+        AND userq_yn IN
+        <foreach collection="pageNav" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="UserRequestNavSearch" resultType="UserRequestVO">
+        SELECT * FROM USER_REQUEST
+        WHERE userq_yn IN
+        <foreach collection="navText" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="UserRequestCategorySearch" resultType="UserRequestVO">
+        SELECT *
+        FROM GROUP_CATEGORY C1
+        JOIN USER_REQUEST UR ON C1.category_num = UR.category_num
+        WHERE C1.category_parent_num = #{category_num} and UR.USERQ_YN in
+        <foreach collection="navText" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+
+
+    <select id="UserRequestBuyList" resultType="UserRequestVO">
+        select * from USER_REQUEST WHERE userq_yn = '사원구매요청' ORDER BY userq_num ASC;
+    </select>
+
+    <update id="UserRequestBuyApprove" parameterType="java.util.Map">
+        update USER_REQUEST set userq_yn = '관리자구매승인', userq_grantor = #{username}, userq_okdate = now()
+        where userq_NUM = #{userRequestVO.userq_num}
+    </update>
+
+    <insert id="UserRequestBuyApproveB" parameterType="UserRequestVO">
+        insert into STOCK_APPROVAL ( username,
+                                     category_num,
+                                     appro_title,
+                                     appro_date,
+                                     appro_comment,
+                                     appro_kind,
+                                     appro_yn,
+                                     userq_num )
+        values ( #{vo.username},
+                 #{vo.category_num},
+                 #{vo.userq_title},
+                 now(),
+                 #{vo.userq_comment},
+                 '구매',
+                 'N',
+                 #{vo.userq_num} )
+    </insert>
+
+    <update id="UserRequestBuyReturn" parameterType="java.util.Map">
+        update USER_REQUEST set userq_yn = '관리자구매반려', userq_grantor = #{username}, userq_okdate = now()
+        where userq_NUM = #{userq_num}
+    </update>
+
+    <select id="UserRequestBuySearch" resultType="UserRequestVO">
+        select * from USER_REQUEST WHERE (username = #{inputText} or userq_kind = #{inputText}) and userq_yn = '사원구매요청' ;
+    </select>
+
+
+
+    <select id="UserRequestBuyHandlePage" resultType="UserRequestVO">
+        select * from USER_REQUEST WHERE userq_yn in ('관리자구매승인', '관리자구매반려')
+    </select>
+
+    <select id="UserRequestBuyHandleSearch" resultType="UserRequestVO">
+        SELECT * FROM USER_REQUEST
+        WHERE (username = #{inputText} OR userq_kind = #{inputText})
+        AND userq_yn IN
+        <foreach collection="pageNav" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="UserRequestBuyNavSearch" resultType="UserRequestVO">
+        SELECT * FROM USER_REQUEST
+        WHERE userq_yn IN
+        <foreach collection="navText" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="UserRequestBuyCategorySearch" resultType="UserRequestVO">
+        SELECT *
+        FROM GROUP_CATEGORY C1
+        JOIN USER_REQUEST UR ON C1.category_num = UR.category_num
+        WHERE C1.category_parent_num = #{category_num} and UR.USERQ_YN in
+        <foreach collection="navText" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+
+
+
+    <select id="HighUserRequestList" resultType="UserRequestVO">
+        select * from USER_REQUEST WHERE userq_yn = '관리자사용승인' ORDER BY userq_num ASC;
+    </select>
+
+    <update id="HighUserRequestApprove" parameterType="java.util.Map">
+        update USER_REQUEST set userq_yn = '최종사용승인', userq_grantor = #{username}, userq_okdate = now()
+        where userq_NUM = #{userq_num}
+    </update>
+
+    <update id="HighUserRequestApproveB" parameterType="java.util.Map">
+        update ITASSETS set assets_status = '사용중', username = #{req_username}, rent_date = now()
+        where assets_num = #{assets_num}
+    </update>
+
+    <update id="HighUserRequestReturn" parameterType="java.util.Map">
+        update USER_REQUEST set userq_yn = '최종사용반려', userq_grantor = #{username}, userq_okdate = now()
+        where userq_NUM = #{userq_num}
+    </update>
+
+    <select id="HighUserRequestSearch" resultType="UserRequestVO">
+        select * from USER_REQUEST WHERE (username = #{inputText} or userq_kind = #{inputText}) and userq_yn = '관리자사용승인' ;
+    </select>
+
+
+
+    <select id="HighUserBuyRequestList" resultType="UserRequestVO">
+        select * from USER_REQUEST WHERE userq_yn = '관리자구매승인' ORDER BY userq_num ASC;
+    </select>
+
+    <update id="HighUserBuyRequestApprove" parameterType="java.util.Map">
+        update USER_REQUEST set userq_yn = '최종구매승인', userq_grantor = #{username}, userq_okdate = now()
+        where userq_NUM = #{userq_num}
+    </update>
+
+    <update id="HighUserBuyRequestReturn" parameterType="int">
+        update USER_REQUEST set userq_yn = '최종구매반려', userq_grantor = #{username}, userq_okdate = now()
+        where userq_NUM = #{userq_num}
+    </update>
+
+    <select id="HighUserBuyRequestSearch" resultType="UserRequestVO">
+        select * from USER_REQUEST WHERE (username = #{inputText} or userq_kind = #{inputText}) and userq_yn = '관리자구매승인' ;
+    </select>
+
+
+
+    <select id="HighUserRequestHandlePage" resultType="UserRequestVO">
+        select * from USER_REQUEST WHERE userq_yn in ('최종사용승인', '최종사용반려')
+    </select>
+
+    <select id="HighUserRequestHandleSearch" resultType="UserRequestVO">
+        SELECT * FROM USER_REQUEST
+        WHERE (username = #{inputText} OR userq_kind = #{inputText})
+        AND userq_yn IN
+        <foreach collection="pageNav" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="HighUserRequestNavSearch" resultType="UserRequestVO">
+        SELECT * FROM USER_REQUEST
+        WHERE userq_yn IN
+        <foreach collection="navText" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="HighUserRequestCategorySearch" resultType="UserRequestVO">
+        SELECT *
+        FROM GROUP_CATEGORY C1
+        JOIN USER_REQUEST UR ON C1.category_num = UR.category_num
+        WHERE C1.category_parent_num = #{category_num} and UR.USERQ_YN in
+        <foreach collection="navText" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+
+    <select id="HighUserRequestBuyHandlePage" resultType="UserRequestVO">
+        select * from USER_REQUEST WHERE userq_yn in ('최종구매승인', '최종구매반려')
+    </select>
+
+    <select id="HighUserRequestBuyHandleSearch" resultType="UserRequestVO">
+        SELECT * FROM USER_REQUEST
+        WHERE (username = #{inputText} OR userq_kind = #{inputText})
+        AND userq_yn IN
+        <foreach collection="pageNav" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="HighUserRequestBuyNavSearch" resultType="UserRequestVO">
+        SELECT * FROM USER_REQUEST
+        WHERE userq_yn IN
+        <foreach collection="navText" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="HighUserRequestBuyCategorySearch" resultType="UserRequestVO">
+        SELECT *
+        FROM GROUP_CATEGORY C1
+        JOIN USER_REQUEST UR ON C1.category_num = UR.category_num
+        WHERE C1.category_parent_num = #{category_num} and UR.USERQ_YN in
+        <foreach collection="navText" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+
+</mapper>

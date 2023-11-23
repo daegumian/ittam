@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ittam.web.reports.service.ReportsMapper">
+    <select id="allUsersNum">
+        select count(*) from USER
+    </select>
+    <select id="allAssetsNum">
+        select count(*) from ITASSETS where ASSETS_STATUS != '폐기'
+    </select>
+    <select id="usingAssetsNum">
+        select count(*) from ITASSETS where ASSETS_STATUS = '사용중'
+    </select>
+
+<!--  /////////////////////////////////////////////////////////////////////  -->
+    <select id="getDesignNum">
+        select count(*) from USER where USER_DEPART = '디자인'
+    </select>
+    <select id="getDevNum">
+        select count(*) from USER where USER_DEPART = '개발'
+    </select>
+    <select id="getEngNum">
+        select count(*) from USER where USER_DEPART = '엔지니어링'
+    </select>
+    <select id="getFinNum">
+        select count(*) from USER where USER_DEPART = '재무'
+    </select>
+    <select id="getRndNum">
+        select count(*) from USER where USER_DEPART = '연구개발'
+    </select>
+    <select id="getPurNum">
+        select count(*) from USER where USER_DEPART = '구매'
+    </select>
+    <select id="getSalesNum">
+        select count(*) from USER where USER_DEPART = '영업'
+    </select>
+    <select id="getMarkNum">
+        select count(*) from USER where USER_DEPART = '마케팅'
+    </select>
+    <select id="getHrNum">
+        select count(*) from USER where USER_DEPART = '인사'
+    </select>
+    <select id="getProdNum">
+        select count(*) from USER where USER_DEPART = '생산'
+    </select>
+    <select id="getAssetStickNum">
+        SELECT count(*) FROM ittam.ITASSETS as it
+                                 left join GROUP_CATEGORY as gc on it.CATEGORY_NUM = gc.CATEGORY_NUM
+        WHERE DATE(add_date) <![CDATA[<=]]> DATE(NOW()) - INTERVAL #{n} MONTH and CATEGORY_PARENT_NUM = #{category_num};
+    </select>
+    <select id="getCPUNum">
+        SELECT count(*)
+        FROM ITASSETS a
+                 LEFT JOIN GROUP_CATEGORY gc on a.CATEGORY_NUM = gc.CATEGORY_NUM
+                 LEFT JOIN PCSPEC pc ON (a.category_num = 5 OR a.category_num = 6) AND a.spec_num = pc.spec_num
+                 LEFT JOIN SWSPEC sw ON (a.category_num = 7 OR a.category_num = 8 OR a.category_num = 9 OR a.category_num = 10 OR a.category_num = 11 OR a.category_num = 12 ) AND a.spec_num = sw.spec_num
+                 LEFT JOIN SERVERSPEC sv ON (a.category_num = 18) AND a.spec_num = sv.spec_num
+                 LEFT JOIN ETCSPEC etc ON a.spec_num = etc.spec_num AND a.category_num != 5 AND a.category_num != 6 AND a.category_num != 18 AND a.category_num != 7 AND a.category_num != 8 AND a.category_num != 9 AND a.category_num != 10 AND a.category_num != 11 AND a.category_num != 12
+        where SPEC_CPU like CONCAT('%', #{cpu}, '%')
+
+    </select>
+    <select id="getGPUNum">
+        SELECT count(*)
+        FROM ITASSETS a
+                 LEFT JOIN GROUP_CATEGORY gc on a.CATEGORY_NUM = gc.CATEGORY_NUM
+                 LEFT JOIN PCSPEC pc ON (a.category_num = 5 OR a.category_num = 6) AND a.spec_num = pc.spec_num
+                 LEFT JOIN SWSPEC sw ON (a.category_num = 7 OR a.category_num = 8 OR a.category_num = 9 OR a.category_num = 10 OR a.category_num = 11 OR a.category_num = 12 ) AND a.spec_num = sw.spec_num
+                 LEFT JOIN SERVERSPEC sv ON (a.category_num = 18) AND a.spec_num = sv.spec_num
+                 LEFT JOIN ETCSPEC etc ON a.spec_num = etc.spec_num AND a.category_num != 5 AND a.category_num != 6 AND a.category_num != 18 AND a.category_num != 7 AND a.category_num != 8 AND a.category_num != 9 AND a.category_num != 10 AND a.category_num != 11 AND a.category_num != 12
+        where SPEC_GPU like CONCAT('%', #{gpu}, '%')
+
+    </select>
+    <select id="getMFGNum">
+        SELECT count(*)
+        FROM ITASSETS a
+        LEFT JOIN GROUP_CATEGORY gc on a.CATEGORY_NUM = gc.CATEGORY_NUM
+        LEFT JOIN PCSPEC pc ON (a.category_num = 5 OR a.category_num = 6) AND a.spec_num = pc.spec_num
+        LEFT JOIN SWSPEC sw ON (a.category_num = 7 OR a.category_num = 8 OR a.category_num = 9 OR a.category_num = 10 OR a.category_num = 11 OR a.category_num = 12 ) AND a.spec_num = sw.spec_num
+        LEFT JOIN SERVERSPEC sv ON (a.category_num = 18) AND a.spec_num = sv.spec_num
+        LEFT JOIN ETCSPEC etc ON a.spec_num = etc.spec_num AND a.category_num != 5 AND a.category_num != 6 AND a.category_num != 18 AND a.category_num != 7 AND a.category_num != 8 AND a.category_num != 9 AND a.category_num != 10 AND a.category_num != 11 AND a.category_num != 12
+        where SPEC_MFG like CONCAT('%', #{mfg}, '%')
+
+    </select>
+
+    <select id="getAssetsAllNum">
+        select gc.CATEGORY_PARENT_NUM, count(*) as allCat from ITASSETS it
+        left join GROUP_CATEGORY gc on it.category_num = gc.category_num
+        where ASSETS_STATUS = '사용가능' or ASSETS_STATUS = '사용중'
+        group by gc.CATEGORY_PARENT_NUM
+    </select>
+    <select id="getAssetsUsingNum">
+        select gc.CATEGORY_PARENT_NUM, count(*) as usingCat from ITASSETS it
+        left join GROUP_CATEGORY gc on it.category_num = gc.category_num
+        where ASSETS_STATUS = '사용중'
+        group by gc.CATEGORY_PARENT_NUM
+    </select>
+    <select id="getSWMFGNum">
+        SELECT count(*)
+        FROM ITASSETS a
+                 LEFT JOIN GROUP_CATEGORY gc on a.CATEGORY_NUM = gc.CATEGORY_NUM
+                 LEFT JOIN PCSPEC pc ON (a.category_num = 5 OR a.category_num = 6) AND a.spec_num = pc.spec_num
+                 LEFT JOIN SWSPEC sw ON (a.category_num = 7 OR a.category_num = 8 OR a.category_num = 9 OR a.category_num = 10 OR a.category_num = 11 OR a.category_num = 12 ) AND a.spec_num = sw.spec_num
+                 LEFT JOIN SERVERSPEC sv ON (a.category_num = 18) AND a.spec_num = sv.spec_num
+                 LEFT JOIN ETCSPEC etc ON a.spec_num = etc.spec_num AND a.category_num != 5 AND a.category_num != 6 AND a.category_num != 18 AND a.category_num != 7 AND a.category_num != 8 AND a.category_num != 9 AND a.category_num != 10 AND a.category_num != 11 AND a.category_num != 12
+        where SW_MFG = #{mfg}
+    </select>
+    <select id="getEtcMFGNum">
+        SELECT count(*)
+        FROM ITASSETS a
+                 LEFT JOIN GROUP_CATEGORY gc on a.CATEGORY_NUM = gc.CATEGORY_NUM
+                 LEFT JOIN PCSPEC pc ON (a.category_num = 5 OR a.category_num = 6) AND a.spec_num = pc.spec_num
+                 LEFT JOIN SWSPEC sw ON (a.category_num = 7 OR a.category_num = 8 OR a.category_num = 9 OR a.category_num = 10 OR a.category_num = 11 OR a.category_num = 12 ) AND a.spec_num = sw.spec_num
+                 LEFT JOIN SERVERSPEC sv ON (a.category_num = 18) AND a.spec_num = sv.spec_num
+                 LEFT JOIN ETCSPEC etc ON a.spec_num = etc.spec_num AND a.category_num != 5 AND a.category_num != 6 AND a.category_num != 18 AND a.category_num != 7 AND a.category_num != 8 AND a.category_num != 9 AND a.category_num != 10 AND a.category_num != 11 AND a.category_num != 12
+        where ETC_MFG = #{etcmfg}
+    </select>
+    <select id="getServerMFGNum">
+        SELECT count(*)
+        FROM ITASSETS a
+                 LEFT JOIN GROUP_CATEGORY gc on a.CATEGORY_NUM = gc.CATEGORY_NUM
+                 LEFT JOIN PCSPEC pc ON (a.category_num = 5 OR a.category_num = 6) AND a.spec_num = pc.spec_num
+                 LEFT JOIN SWSPEC sw ON (a.category_num = 7 OR a.category_num = 8 OR a.category_num = 9 OR a.category_num = 10 OR a.category_num = 11 OR a.category_num = 12 ) AND a.spec_num = sw.spec_num
+                 LEFT JOIN SERVERSPEC sv ON (a.category_num = 18) AND a.spec_num = sv.spec_num
+                 LEFT JOIN ETCSPEC etc ON a.spec_num = etc.spec_num AND a.category_num != 5 AND a.category_num != 6 AND a.category_num != 18 AND a.category_num != 7 AND a.category_num != 8 AND a.category_num != 9 AND a.category_num != 10 AND a.category_num != 11 AND a.category_num != 12
+        where SERVER_MFG = #{servermfg}
+    </select>
+    <select id="getDepartAsset">
+        select count(*) from USER u
+                                 left join ITASSETS i on u.username = i.username
+        where USER_DEPART = #{depart}
+    </select>
+</mapper>

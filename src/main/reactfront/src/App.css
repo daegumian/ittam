@@ -1,0 +1,65 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+#itassets
+
+.datepicker {
+  width: 1000px;
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  outline: none;
+}
+
+/*모달 중앙 정렬*/
+/* 모달 스타일 */
+.modalmodal {
+  display: none; /* 초기에는 보이지 않게 설정 */
+  position: fixed;
+  top: 50%; /* 수직 중앙 정렬 */
+  left: 50%; /* 수평 중앙 정렬 */
+  transform: translate(-50%, -50%); /* 모달을 중앙으로 이동 */
+  z-index: 1000; /* 다른 요소 위에 보이도록 설정 (원하는 숫자로 조절) */
+}
+
+/* show 클래스가 추가된 경우 모달 표시 */
+.modalmodal.show {
+  display: block;
+}

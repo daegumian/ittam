@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ittam.web.asset_request.service.AssetRequestMapper">
+
+    <!--  전체 자산 목록  -->
+    <select id="AssetAllList">
+        SELECT
+            a.*,
+            pc.*,
+            sw.*,
+            etc.*,
+            sv.*,
+            c.category_name
+        FROM ITASSETS a
+                 LEFT JOIN PCSPEC pc ON (a.CATEGORY_NUM = 5 OR a.CATEGORY_NUM = 6) AND a.spec_num = pc.spec_num
+                 LEFT JOIN SWSPEC sw ON (a.CATEGORY_NUM = 7 OR a.CATEGORY_NUM = 8 OR a.CATEGORY_NUM = 9 OR a.CATEGORY_NUM = 10 OR a.CATEGORY_NUM = 11 OR a.CATEGORY_NUM = 12) AND a.spec_num = sw.spec_num
+                 LEFT JOIN SERVERSPEC sv ON (a.CATEGORY_NUM = 18) AND a.spec_num = sv.spec_num
+                 LEFT JOIN ETCSPEC etc ON a.spec_num = etc.spec_num
+                 LEFT JOIN GROUP_CATEGORY c ON a.CATEGORY_NUM = c.CATEGORY_NUM
+        WHERE a.assets_status = '사용가능';
+    </select>
+
+    <!-- 전체 자산 목록 검색 -->
+    <select id="AssetRequestSearch" resultType="ITAssetsVO">
+        SELECT
+            a.*,
+            pc.*,
+            sw.*,
+            etc.*,
+            sv.*,
+            c.category_name
+        FROM ITASSETS a
+                 LEFT JOIN PCSPEC pc ON (a.CATEGORY_NUM = 5 OR a.CATEGORY_NUM = 6) AND a.spec_num = pc.spec_num
+                 LEFT JOIN SWSPEC sw ON (a.CATEGORY_NUM = 7 OR a.CATEGORY_NUM = 8 OR a.CATEGORY_NUM = 9 OR a.CATEGORY_NUM = 10 OR a.CATEGORY_NUM = 11 OR a.CATEGORY_NUM = 12) AND a.spec_num = sw.spec_num
+                 LEFT JOIN SERVERSPEC sv ON (a.CATEGORY_NUM = 18) AND a.spec_num = sv.spec_num
+                 LEFT JOIN ETCSPEC etc ON a.spec_num = etc.spec_num
+                 LEFT JOIN GROUP_CATEGORY c ON a.CATEGORY_NUM = c.CATEGORY_NUM
+        WHERE a.assets_status = '사용가능' AND a.assets_name LIKE CONCAT('%', #{inputText}, '%');
+    </select>
+
+    <!--    pc-->
+    <select id="AssetRequestListPC" resultType="ITAssetsVO">
+        SELECT
+            a.*,
+            pc.*,
+            sw.*,
+            etc.*,
+            sv.*,
+            c.category_name
+        FROM ITASSETS a
+                 LEFT JOIN PCSPEC pc ON (a.CATEGORY_NUM = 5 OR a.CATEGORY_NUM = 6) AND a.spec_num = pc.spec_num
+                 LEFT JOIN SWSPEC sw ON (a.CATEGORY_NUM = 7 OR a.CATEGORY_NUM = 8 OR a.CATEGORY_NUM = 9 OR a.CATEGORY_NUM = 10 OR a.CATEGORY_NUM = 11 OR a.CATEGORY_NUM = 12) AND a.spec_num = sw.spec_num
+                 LEFT JOIN SERVERSPEC sv ON (a.CATEGORY_NUM = 18) AND a.spec_num = sv.spec_num
+                 LEFT JOIN ETCSPEC etc ON a.spec_num = etc.spec_num
+                 LEFT JOIN GROUP_CATEGORY c ON a.CATEGORY_NUM = c.CATEGORY_NUM
+        WHERE (a.CATEGORY_NUM = 5 OR a.CATEGORY_NUM = 6) AND a.assets_status = '사용가능';
+
+    </select>
+
+
+    <!--    sw-->
+    <select id="AssetRequestListSW" resultType="ITAssetsVO">
+        SELECT
+            a.*,
+            pc.*,
+            sw.*,
+            etc.*,
+            sv.*,
+            c.category_name
+        FROM ITASSETS a
+                 LEFT JOIN PCSPEC pc ON (a.CATEGORY_NUM = 5 OR a.CATEGORY_NUM = 6) AND a.spec_num = pc.spec_num
+                 LEFT JOIN SWSPEC sw ON (a.CATEGORY_NUM = 7 OR a.CATEGORY_NUM = 8 OR a.CATEGORY_NUM = 9 OR a.CATEGORY_NUM = 10 OR a.CATEGORY_NUM = 11 OR a.CATEGORY_NUM = 12) AND a.spec_num = sw.spec_num
+                 LEFT JOIN SERVERSPEC sv ON (a.CATEGORY_NUM = 18) AND a.spec_num = sv.spec_num
+                 LEFT JOIN ETCSPEC etc ON a.spec_num = etc.spec_num
+            AND a.CATEGORY_NUM != 5
+         AND a.CATEGORY_NUM != 6
+         AND a.CATEGORY_NUM != 18
+         AND a.CATEGORY_NUM != 7
+         LEFT JOIN GROUP_CATEGORY c ON a.CATEGORY_NUM = c.CATEGORY_NUM
+        WHERE (a.CATEGORY_NUM = 7 OR a.CATEGORY_NUM = 8 OR a.CATEGORY_NUM = 9 OR a.CATEGORY_NUM = 10 OR a.CATEGORY_NUM = 11 OR a.CATEGORY_NUM = 12)
+          AND a.assets_status = '사용가능';
+    </select>
+
+    <!--    sv-->
+    <select id="AssetRequestListSV" resultType="ITAssetsVO">
+        SELECT
+            a.*,
+            pc.*,
+            sw.*,
+            etc.*,
+            sv.*,
+            c.category_name
+        FROM ITASSETS a
+                 LEFT JOIN PCSPEC pc ON (a.CATEGORY_NUM = 5 OR a.CATEGORY_NUM = 6) AND a.spec_num = pc.spec_num
+                 LEFT JOIN SWSPEC sw ON (a.CATEGORY_NUM = 7 OR a.CATEGORY_NUM = 8 OR a.CATEGORY_NUM = 9 OR a.CATEGORY_NUM = 10 OR a.CATEGORY_NUM = 11 OR a.CATEGORY_NUM = 12) AND a.spec_num = sw.spec_num
+                 LEFT JOIN SERVERSPEC sv ON (a.CATEGORY_NUM = 18) AND a.spec_num = sv.spec_num
+                 LEFT JOIN ETCSPEC etc ON a.spec_num = etc.spec_num
+            AND a.CATEGORY_NUM != 5
+         AND a.CATEGORY_NUM != 6
+         AND a.CATEGORY_NUM != 18
+         AND a.CATEGORY_NUM != 7
+         LEFT JOIN GROUP_CATEGORY c ON a.CATEGORY_NUM = c.CATEGORY_NUM
+        WHERE a.CATEGORY_NUM = 18 AND a.assets_status = '사용가능';
+    </select>
+
+    <!--    etc-->
+    <select id="AssetRequestListETC" resultType="ITAssetsVO">
+        SELECT
+            a.*,
+            pc.*,
+            sw.*,
+            etc.*,
+            sv.*,
+            c.category_name
+        FROM ITASSETS a
+                 LEFT JOIN PCSPEC pc ON (a.CATEGORY_NUM = 5 OR a.CATEGORY_NUM = 6) AND a.spec_num = pc.spec_num
+                 LEFT JOIN SWSPEC sw ON (a.CATEGORY_NUM = 7 OR a.CATEGORY_NUM = 8 OR a.CATEGORY_NUM = 9 OR a.CATEGORY_NUM = 10 OR a.CATEGORY_NUM = 11 OR a.CATEGORY_NUM = 12) AND a.spec_num = sw.spec_num
+                 LEFT JOIN SERVERSPEC sv ON (a.CATEGORY_NUM = 18) AND a.spec_num = sv.spec_num
+                 LEFT JOIN ETCSPEC etc ON a.spec_num = etc.spec_num
+            AND a.CATEGORY_NUM != 5
+         AND a.CATEGORY_NUM != 6
+         AND a.CATEGORY_NUM != 18
+         AND a.CATEGORY_NUM != 7
+         LEFT JOIN GROUP_CATEGORY c ON a.CATEGORY_NUM = c.CATEGORY_NUM
+        WHERE (a.CATEGORY_NUM != 5
+          AND a.CATEGORY_NUM != 6 AND a.CATEGORY_NUM != 7 AND a.CATEGORY_NUM != 8 AND a.CATEGORY_NUM != 9
+          AND a.CATEGORY_NUM != 10 AND a.CATEGORY_NUM != 11 AND a.CATEGORY_NUM != 12 AND a.CATEGORY_NUM != 18)
+          AND a.assets_status = '사용가능';
+    </select>
+
+
+    <!---카테고리별 검색 -->
+
+    <!--    pc검색-->
+    <select id="AssetRequestSearchPC" resultType="ITAssetsVO">
+        SELECT
+            a.*,
+            pc.*,
+            sw.*,
+            etc.*,
+            sv.*,
+            c.category_name
+        FROM ITASSETS a
+                 INNER JOIN GROUP_CATEGORY c ON a.CATEGORY_NUM = c.CATEGORY_NUM
+                 LEFT JOIN PCSPEC pc ON a.spec_num = pc.spec_num
+                 LEFT JOIN SWSPEC sw ON a.spec_num = sw.spec_num
+                 LEFT JOIN SERVERSPEC sv ON a.spec_num = sv.spec_num
+                 LEFT JOIN ETCSPEC etc ON a.spec_num = etc.spec_num
+        WHERE (a.CATEGORY_NUM = 5 OR a.CATEGORY_NUM = 6)
+          AND a.assets_name LIKE CONCAT('%', #{inputText}, '%');
+
+
+    </select>
+
+    <!--SW 검색-->
+    <select id="AssetRequestSearchSW" resultType="ITAssetsVO">
+        SELECT
+            a.*,
+            pc.*,
+            sw.*,
+            etc.*,
+            sv.*,
+            c.category_name
+        FROM ITASSETS a
+                 INNER JOIN GROUP_CATEGORY c ON a.CATEGORY_NUM = c.CATEGORY_NUM
+                 LEFT JOIN PCSPEC pc ON a.spec_num = pc.spec_num
+                 LEFT JOIN SWSPEC sw ON a.spec_num = sw.spec_num
+                 LEFT JOIN SERVERSPEC sv ON a.spec_num = sv.spec_num
+                 LEFT JOIN ETCSPEC etc ON a.spec_num = etc.spec_num
+        WHERE (
+                      (a.CATEGORY_NUM = 7 OR a.CATEGORY_NUM = 8 OR a.CATEGORY_NUM = 9 OR a.CATEGORY_NUM = 10 OR a.CATEGORY_NUM = 11 OR a.CATEGORY_NUM = 12)
+                      AND a.assets_name LIKE CONCAT('%', #{inputText}, '%')
+                  );
+
+    </select>
+
+    <!--SV 검색-->
+    <select id="AssetRequestSearchSV" resultType="ITAssetsVO">
+        SELECT
+            a.*,
+            pc.*,
+            sw.*,
+            etc.*,
+            sv.*,
+            c.category_name
+        FROM ITASSETS a
+                 LEFT JOIN PCSPEC pc ON (a.CATEGORY_NUM = 5 OR a.CATEGORY_NUM = 6) AND a.spec_num = pc.spec_num
+                 LEFT JOIN SWSPEC sw ON (a.CATEGORY_NUM = 7 OR a.CATEGORY_NUM = 8 OR a.CATEGORY_NUM = 9 OR a.CATEGORY_NUM = 10 OR a.CATEGORY_NUM = 11 OR a.CATEGORY_NUM = 12) AND a.spec_num = sw.spec_num
+                 LEFT JOIN SERVERSPEC sv ON (a.CATEGORY_NUM = 18) AND a.spec_num = sv.spec_num
+                 LEFT JOIN ETCSPEC etc ON a.spec_num = etc.spec_num
+                 LEFT JOIN GROUP_CATEGORY c ON a.CATEGORY_NUM = c.CATEGORY_NUM
+        WHERE a.CATEGORY_NUM = 18
+          AND a.assets_name LIKE CONCAT('%', #{inputText}, '%');
+
+    </select>
+
+    <!--ETC 검색-->
+    <select id="AssetRequestSearchETC" resultType="ITAssetsVO">
+        SELECT
+            a.*,
+            pc.*,
+            sw.*,
+            etc.*,
+            sv.*,
+            c.category_name
+        FROM ITASSETS a
+                 LEFT JOIN PCSPEC pc ON (a.CATEGORY_NUM = 5 OR a.CATEGORY_NUM = 6) AND a.spec_num = pc.spec_num
+                 LEFT JOIN SWSPEC sw ON (a.CATEGORY_NUM = 7 OR a.CATEGORY_NUM = 8 OR a.CATEGORY_NUM = 9 OR a.CATEGORY_NUM = 10 OR a.CATEGORY_NUM = 11 OR a.CATEGORY_NUM = 12) AND a.spec_num = sw.spec_num
+                 LEFT JOIN SERVERSPEC sv ON (a.CATEGORY_NUM = 18) AND a.spec_num = sv.spec_num
+                 LEFT JOIN ETCSPEC etc ON a.spec_num = etc.spec_num
+                 LEFT JOIN GROUP_CATEGORY c ON a.CATEGORY_NUM = c.CATEGORY_NUM
+        WHERE a.CATEGORY_NUM NOT IN (5, 6, 7, 8, 9, 10, 11, 12, 18)
+          AND a.assets_name LIKE CONCAT('%', #{inputText}, '%');
+
+
+    </select>
+
+    <!--  사용신청 insert -->
+
+    <insert id="AssetUsageRequest">
+        INSERT INTO USER_REQUEST (username, category_num, assets_num, userq_title, userq_count, userq_regdate, userq_kind, userq_comment,userq_yn)
+        VALUES (
+                   #{username},
+                   #{category_num},
+                   #{assets_num},
+                   #{userq_title},
+                   '1',
+                   now(),
+                   #{userq_kind},
+                   #{userq_comment},
+                   '사원사용요청'
+               );
+    </insert>
+
+    <!-- 두 번째 insert -->
+    <insert id="AssetUsageRequestUpdate">
+        UPDATE ITASSETS
+        SET ASSETS_STATUS = '사용승인대기'
+        WHERE ASSETS_NUM = #{assets_num};
+    </insert>
+
+    <!--  구매신청 insert  -->
+
+    <insert id="AssetBuyRequest" parameterType="com.ittam.web.command.UserRequestVO">
+        INSERT INTO USER_REQUEST(username, category_num, assets_num, userq_title, userq_count, userq_regdate, userq_kind, userq_comment, userq_yn)
+        select
+            #{username},
+            category_num,
+            '0',
+            #{userq_title},
+            '1',
+            now(),
+            #{userq_kind},
+            #{userq_comment},
+            '사원구매요청'
+        FROM GROUP_CATEGORY
+        WHERE category_name = #{userq_kind};
+
+    </insert>
+
+
+</mapper>

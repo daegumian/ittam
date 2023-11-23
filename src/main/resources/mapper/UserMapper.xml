@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ittam.web.user.service.UserMapper">
+
+    <select id="userList" resultType="UserVO">
+        SELECT * FROM ittam.USER ORDER BY USER_NAME DESC
+    </select>
+
+    <insert id="userRegist" parameterType="userVO">
+        INSERT INTO ittam.USER(USERNAME,
+                               PASSWORD,
+                               USER_NAME,
+                               USER_EMAIL,
+                               USER_DEPART,
+                               USER_PHONE,
+                               USER_ADDRESS,
+                               ROLE,
+                               USER_JOINDATE)
+        VALUES(#{username},
+               #{password},
+               #{user_name},
+               #{user_email},
+               #{user_depart},
+               #{user_phone},
+               #{user_address},
+               #{role},
+               #{user_joindate})
+    </insert>
+
+    <select id="userDetail" resultType="userVO">
+        SELECT username,
+               user_name,
+               role,
+               user_depart,
+               user_email,
+               user_joindate,
+               user_phone,
+               user_address
+        FROM ittam.USER
+        WHERE username = #{userId}
+    </select>
+
+    <update id="userEdit" >
+        update ittam.USER set role = #{newRole} where username = #{targetId}
+    </update>
+
+    <select id="passwordFind" resultType="UserVO">
+        select * from USER where user_email = #{email}
+    </select>
+
+    <delete id="userRemove" >
+        delete from ittam.USER where username = #{targetId}
+    </delete>
+
+    <select id="userFindAsset" resultType="int">
+        select count(*) from ittam.ITASSETS where username = #{targetId}
+    </select>
+
+    <select id="userFindApproval" resultType="int">
+        select count(*) from ittam.STOCK_APPROVAL where username = #{targetId}
+    </select>
+    
+    <select id="userFindRequest" resultType="int">
+        select count(*) from ittam.USER_REQUEST where username = #{targetId}
+    </select>
+
+    <select id="userFindReturn" resultType="int">
+        select count(*) from ittam.STOCK_RETURN where username = #{targetId}
+    </select>
+
+    <update id="userAssetChange">
+        update ittam.ITASSETS set username = '', assets_status = '사용가능' where username = #{targetId}
+    </update>
+
+    <delete id="removeFromStockApproval">
+        DELETE FROM ittam.STOCK_APPROVAL WHERE username = #{targetId}
+    </delete>
+
+    <delete id="removeFromUserRequest">
+        DELETE FROM ittam.USER_REQUEST WHERE username = #{targetId}
+    </delete>
+
+    <delete id="removeFromStockReturn">
+        DELETE FROM ittam.STOCK_RETURN WHERE username = #{targetId}
+    </delete>
+
+    <select id="getSearch" resultType="UserVO">
+        select *
+        from ittam.USER
+        where
+            <choose>
+                <when test="option == 'all'">
+                    username like concat('%', #{value}, '%') or
+                    user_name like concat('%', #{value},'%') or
+                    user_email like concat('%', #{value}, '%') or
+                    user_depart like concat('%', #{value}, '%') or
+                    user_phone like concat('%', #{value}, '%')
+                </when>
+                <when test="option == 'name'">
+                    user_name like concat('%', #{value},'%')
+                </when>
+                <when test="option == 'userId'">
+                    username like concat('%', #{value}, '%')
+                </when>
+                <when test="option == 'depart'">
+                    user_depart like concat('%', #{value}, '%')
+                </when>
+                <when test="option == 'email'">
+                    user_email like concat('%', #{value}, '%')
+                </when>
+            </choose>
+    </select>
+
+    <update id="UserPasswordReset" >
+        update USER set password = #{passwordReset} where user_email = #{emailInput}
+    </update>
+
+    <select id="login" resultType="UserVO">
+        select * from USER where username = #{username}
+    </select>
+
+</mapper>

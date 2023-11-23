@@ -1,0 +1,46 @@
+.userId-wrapper {
+  display: flex;
+
+  justify-content: space-between;
+}
+
+.userId-wrapper #userId {
+  width: 70%;
+}
+
+.UserReg .section .row {
+  justify-content: center;
+}
+
+.userReg-btn-wrapper {
+  display: flex;
+  width: 40%;
+  margin-left: 30%;
+  justify-content: center;
+}
+
+.userReg-btn-wrapper button {
+  margin-right: 50px;
+}
+
+/* 권한 변경 페이지 */
+
+.role-control-wrapper {
+  display: flex;
+}
+
+.role-control-wrapper #selectrole {
+  margin-left: 10px;
+}
+
+/* 유저 리스트에서 호버 */
+tbody .prod-box .userName .hover-bold:hover {
+  font-weight: bold;
+  color: #ff5733;
+}
+
+/* 검색 창  */
+
+.selected-search {
+  margin-right: 10px;
+}

@@ -1,0 +1,115 @@
+.tag-element.tag-element--faq>a.active {
+  color: #007BC6;
+}
+
+.tag-element.tag-element--faq>a {
+  position: relative;
+  margin: 0;
+  padding: 20px;
+  font-size: 18px;
+  color: #393939;
+  font-weight: 500;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  margin-right: 10px;
+}
+
+.tag-element a.active {
+  color: #0066eb;
+  padding: 20px 23.6px; 
+  border-bottom: 2px solid #0066eb;
+  margin-right: 10px;
+}
+
+.datatable-dropdown,
+.tag-element {
+  margin-bottom: 0; /* 아래 여백을 없앰 */
+}
+
+.datatable-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.datatable-search {
+  margin-top: 10px;
+  flex-grow: 1;
+  text-align: right; /* 텍스트 정렬을 오른쪽으로 설정 */
+}
+
+.bbs .p-search .p-date .p-input {
+  background: none;
+  height: 38px;
+  line-height: 38px;
+}
+
+.cal_group input[type="text"] {
+  display: inline-block;
+  width: 100%;
+  padding: 0 15px;
+  border: none;
+}
+
+.cal-line {
+  display: inline-block;
+  padding: 0 10px;
+  font-size: 16px;
+  text-align: middle;
+}
+.table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+
+.notice_title > p{
+  margin: 0;
+
+}
+.notice_title > p:hover {
+  text-decoration: underline;
+  
+  width: auto;
+  box-sizing: border-box;
+  color: #6aa2f0;
+}
+
+.notice_title{
+  box-sizing: border-box;
+
+}
+.noticeList_thead > tr th:nth-child(1){
+  width : 56px;
+}
+.noticeList_thead > tr th:nth-child(2){
+  width : 145px;
+}
+.noticeList_thead > tr th:nth-child(3){
+  width : 530px;
+}
+.noticeList_thead > tr th:nth-child(4){
+  width : 200px;
+}
+button {
+  white-space: nowrap;
+}
+
+.datatable-search input[type="search"] {
+  width: 200px; 
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  outline: none;
+}
+
+.datatable-search input[type="search"]:focus {
+  border-color: #86b7fe;
+  outline: 0;
+  box-shadow: 0 0 0 0.25rem rgba(13,110,253,.25);
+}
+
+
